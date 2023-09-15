@@ -6,7 +6,6 @@ import com.zaxxer.hikari.HikariDataSource;
 import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.time.LocalDate;
 import java.util.*;
 
 final class PessoaDataSource {
@@ -147,15 +146,6 @@ final class PessoaDataSource {
 
             return pessoaId.toString();
         }
-    }
-
-    private record PessoaModel(
-            String id,
-            String apelido,
-            String nome,
-            LocalDate nascimento,
-            String stack
-    ) {
     }
 
 }
