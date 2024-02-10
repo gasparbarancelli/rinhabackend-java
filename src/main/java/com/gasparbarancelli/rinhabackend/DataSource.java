@@ -47,7 +47,7 @@ final class DataSource {
             VALUES (?, ?, ?, ?, ?)
         """;
 
-    private static final String SQL_UPDATE_CLIENTE = "UPDATE CLIENTE SET SALDO = SALDO + ? WHERE ID = ?";
+    private static final String SQL_UPDATE_CLIENTE = "UPDATE CLIENTE SET SALDO = ? WHERE ID = ?";
 
     static {
         var host = Optional.ofNullable(System.getenv("DATABASE_HOST"))
