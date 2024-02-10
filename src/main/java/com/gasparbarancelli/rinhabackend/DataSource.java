@@ -82,7 +82,7 @@ final class DataSource {
             var cliente = getCliente(clienteId, stmtFindCliente);
             var transacoes = getTransacoes(clienteId, stmtFindTransacoes);
 
-            var saldo = new ExtratoResposta.ExtratoSaldoResposta(
+            var saldo = new ExtratoSaldoResposta(
                     cliente.saldo(),
                     LocalDateTime.now(),
                     cliente.limite()
@@ -113,10 +113,10 @@ final class DataSource {
         }
     }
 
-    private static List<ExtratoResposta.ExtratoTransacaoResposta> getTransacoes(int clienteId, PreparedStatement statement) throws SQLException {
+    private static List<ExtratoTransacaoResposta> getTransacoes(int clienteId, PreparedStatement statement) throws SQLException {
         statement.setObject(1, clienteId);
         try (var resultSet = statement.executeQuery()) {
-            List<ExtratoResposta.ExtratoTransacaoResposta> transacoes = new ArrayList<>(resultSet.getFetchSize());
+            List<ExtratoTransacaoResposta> transacoes = new ArrayList<>(resultSet.getFetchSize());
             while (resultSet.next()) {
                 var valor = resultSet.getInt(1);
                 var tipo = resultSet.getString(2);
@@ -124,7 +124,7 @@ final class DataSource {
                 var data = resultSet.getTimestamp(4);
 
 
-                var transacao = new ExtratoResposta.ExtratoTransacaoResposta(
+                var transacao = new ExtratoTransacaoResposta(
                         valor,
                         TipoTransacao.valueOf(tipo),
                         descricao,

@@ -15,12 +15,12 @@
     "allPublicMethods": true
   },
   {
-    "name": "com.gasparbarancelli.rinhabackend.ExtratoResposta.ExtratoSaldoResposta",
+    "name": "com.gasparbarancelli.rinhabackend.ExtratoSaldoResposta",
     "allDeclaredConstructors": true,
     "allPublicMethods": true
   },
   {
-    "name": "com.gasparbarancelli.rinhabackend.ExtratoResposta.ExtratoTransacaoResposta",
+    "name": "com.gasparbarancelli.rinhabackend.ExtratoTransacaoResposta",
     "allDeclaredConstructors": true,
     "allPublicMethods": true
   }
