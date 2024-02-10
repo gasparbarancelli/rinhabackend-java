@@ -10,4 +10,8 @@ public record Cliente(
         return id < 1 || id > 5;
     }
 
+    public int getSaldoComLimite() {
+        return saldo + limite;
+    }
+
 }

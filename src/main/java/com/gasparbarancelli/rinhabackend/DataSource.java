@@ -75,12 +75,6 @@ final class DataSource {
     private DataSource() {
     }
 
-    static void warm() {
-        for (int i = 1; i < 5; i++) {
-             extrato(i);
-        }
-    }
-
     static ExtratoResposta extrato(int clienteId) {
         try (var con = hikariDataSource.getConnection();
              var stmtFindCliente = con.prepareStatement(SQL_CLIENTE_FIND_BY_ID);
@@ -142,16 +136,19 @@ final class DataSource {
         }
     }
 
-    static TransacaoResposta insert(Transacao transacao) throws SQLException {
-        try (var con = hikariDataSource.getConnection()) {
+    static TransacaoResposta insert(Transacao transacao) throws Exception {
+        try (var con = hikariDataSource.getConnection();
+             var stmtClienteFind = con.prepareStatement(SQL_CLIENTE_FIND_BY_ID_FOR_UPDATE)) {
             con.setAutoCommit(false);
+            var cliente = getCliente(1, stmtClienteFind);
 
-            try (var stmtClienteFind = con.prepareStatement(SQL_CLIENTE_FIND_BY_ID_FOR_UPDATE);
-                 var stmtTransacaoInsert = con.prepareStatement(SQL_INSERT_TRANSACAO);
+            if (TipoTransacao.d.equals(transacao.tipo())
+                    && cliente.getSaldoComLimite() < transacao.valor()) {
+                throw new Exception("Dados invalidos");
+            }
+
+            try (var stmtTransacaoInsert = con.prepareStatement(SQL_INSERT_TRANSACAO);
                  var stmtClienteUpdate = con.prepareStatement(SQL_UPDATE_CLIENTE)) {
-
-                var cliente = getCliente(1, stmtClienteFind);
-
                 stmtTransacaoInsert.setInt(1, transacao.cliente());
                 stmtTransacaoInsert.setInt(2, transacao.valor());
                 stmtTransacaoInsert.setString(3, transacao.tipo().name());

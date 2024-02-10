@@ -71,7 +71,7 @@
                             <imageName>${imageName}</imageName>
                             <fallback>false</fallback>
                             <buildArgs>
-                                <buildArg>-H:DashboardDump=fortune -H:+DashboardAll</buildArg>
+                                <buildArg>-H:DashboardDump=rinhaBackend -H:+DashboardAll</buildArg>
                             </buildArgs>
                             <agent>
                                 <enabled>true</enabled>
