@@ -14,7 +14,7 @@ services:
     deploy:
       resources:
         limits:
-          cpus: "0.35"
+          cpus: "0.4"
           memory: "100MB"
 
   api2:
@@ -31,7 +31,7 @@ services:
     deploy:
       resources:
         limits:
-          cpus: "0.35"
+          cpus: "0.4"
           memory: "100MB"
 
   envoy:
@@ -42,7 +42,7 @@ services:
     deploy:
       resources:
         limits:
-          cpus: "0.2"
+          cpus: "0.15"
           memory: "100MB"
     depends_on:
       - api1
@@ -68,7 +68,7 @@ services:
     deploy:
       resources:
         limits:
-          cpus: "0.6"
+          cpus: "0.55"
           memory: "200MB"
     logging:
       driver: none

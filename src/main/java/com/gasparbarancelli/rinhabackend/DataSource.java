@@ -57,8 +57,8 @@ final class DataSource {
         config.setJdbcUrl("jdbc:postgresql://" + host + "/rinha-backend?loggerLevel=OFF");
         config.setUsername("rinha");
         config.setPassword("backend");
-        config.addDataSourceProperty("minimumIdle", "5");
-        config.addDataSourceProperty("maximumPoolSize", "5");
+        config.addDataSourceProperty("minimumIdle", "15");
+        config.addDataSourceProperty("maximumPoolSize", "15");
         config.addDataSourceProperty("cachePrepStmts", "true");
         config.addDataSourceProperty("prepStmtCacheSize", "250");
         config.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");
