@@ -24,15 +24,27 @@
         </dependency>
 
         <dependency>
-            <groupId>com.google.code.gson</groupId>
-            <artifactId>gson</artifactId>
-            <version>2.10.1</version>
+            <groupId>com.fasterxml.jackson.dataformat</groupId>
+            <artifactId>jackson-dataformat-xml</artifactId>
+            <version>2.16.1</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.fasterxml.jackson.datatype</groupId>
+            <artifactId>jackson-datatype-jsr310</artifactId>
+            <version>2.16.1</version>
         </dependency>
 
         <dependency>
             <groupId>com.zaxxer</groupId>
             <artifactId>HikariCP</artifactId>
             <version>5.0.1</version>
+        </dependency>
+
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <version>1.4.14</version>
         </dependency>
 
         <dependency>
@@ -71,6 +83,9 @@
                                 <enabled>true</enabled>
                                 <defaultMode>Standard</defaultMode>
                             </agent>
+                            <reflectConfigFiles>
+                                <reflectConfigFile>src/main/resources/META-INF/native-image/reflect-config.json</reflectConfigFile>
+                            </reflectConfigFiles>
                         </configuration>
                     </plugin>
                     <plugin>

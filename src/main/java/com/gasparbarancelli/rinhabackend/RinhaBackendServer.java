@@ -21,6 +21,7 @@ public class RinhaBackendServer {
     public void startServer() throws IOException {
         var socketAddress = getSocketAddress();
         if (socketAddress.isEmpty()) {
+            LOGGER.info("Defina a variavel de ambiente HTTP_PORT para iniciar o servidor web");
             return;
         }
 

@@ -3,7 +3,7 @@ package com.gasparbarancelli.rinhabackend;
 import java.time.LocalDateTime;
 
 public record TransacaoRequisicao(
-        Integer valor,
+        String valor,
         TipoTransacao tipo,
         String descricao
 ) {
@@ -17,7 +17,7 @@ public record TransacaoRequisicao(
     public Transacao geraTransacao(int cliente) {
         return new Transacao(
                 cliente,
-                valor,
+                Integer.parseInt(valor),
                 tipo,
                 descricao,
                 LocalDateTime.now()
