@@ -3,14 +3,14 @@ package com.gasparbarancelli.rinhabackend;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 final class TransacaoMapper {
 
     private static final Gson GSON = new GsonBuilder()
             .serializeNulls()
             .registerTypeAdapter(String.class, new StringValueAdapter())
-            .registerTypeAdapter(LocalDate.class, new LocalDateAdapter())
+            .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeAdapter())
             .create();
 
     private TransacaoMapper() {
@@ -26,6 +26,10 @@ final class TransacaoMapper {
 
     static String map(ExtratoResposta extratoResposta) {
         return GSON.toJson(extratoResposta);
+    }
+
+    static String map(TransacaoResposta transacaoResposta) {
+        return GSON.toJson(transacaoResposta);
     }
 
 }

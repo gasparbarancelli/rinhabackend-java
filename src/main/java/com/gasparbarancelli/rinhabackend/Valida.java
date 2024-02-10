@@ -8,17 +8,12 @@ public class Valida {
     private Valida() {
     }
 
-    public static Predicate<String> valor = (valor) -> {
+    public static Predicate<Integer> valor = (valor) -> {
         if (Objects.isNull(valor)) {
             return false;
         }
 
-        try {
-            var intValue = Integer.parseInt(valor);
-            return intValue > 0;
-        } catch (Exception e) {
-            return false;
-        }
+        return valor > 0;
     };
 
     public static Predicate<String> descricao = (descricao) ->

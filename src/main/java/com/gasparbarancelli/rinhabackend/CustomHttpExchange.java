@@ -28,10 +28,6 @@ final class CustomHttpExchange {
         return "GET".equals(method);
     }
 
-    String getQuery() {
-        return exchange.getRequestURI().getQuery();
-    }
-
     void sendResponseHeaders(int rCode, long responseLength) {
         try {
             exchange.sendResponseHeaders(rCode, responseLength);

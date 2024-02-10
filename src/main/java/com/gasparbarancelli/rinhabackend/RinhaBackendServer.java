@@ -19,8 +19,7 @@ public class RinhaBackendServer {
 
     public void startServer() throws IOException {
         var httpServer = HttpServer.create(httpPort(), 0);
-        httpServer.createContext("/pessoas", new TransacaoHttpHandler());
-        httpServer.createContext("/contagem-pessoas", new ExtratoHttpHandler());
+        httpServer.createContext("/clientes", new TransacaoHttpHandler());
         httpServer.setExecutor(Executors.newVirtualThreadPerTaskExecutor());
         httpServer.start();
     }
@@ -28,7 +27,7 @@ public class RinhaBackendServer {
     private InetSocketAddress httpPort() {
         var port = Optional.ofNullable(System.getenv("HTTP_PORT"))
                 .map(Integer::valueOf)
-                .orElse(80);
+                .orElse(8080);
 
         LOGGER.info("Servidor http respondendo na porta " + port);
 

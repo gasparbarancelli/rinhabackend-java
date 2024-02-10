@@ -2,11 +2,9 @@ package com.gasparbarancelli.rinhabackend;
 
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
-import org.postgresql.util.PSQLException;
 
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.UUID;
 
 final class TransacaoHttpHandler implements HttpHandler {
 
@@ -35,8 +33,13 @@ final class TransacaoHttpHandler implements HttpHandler {
         try {
             var body = exchange.getBody();
             var transacaoRequisicao = TransacaoMapper.map(body);
-            DataSource.insert(transacaoRequisicao.geraTransacao(clienteId));
-            exchange.sendResponseHeaders(200, 0);
+            var transacaoResposta = DataSource.insert(transacaoRequisicao.geraTransacao(clienteId));
+
+            var json = TransacaoMapper.map(transacaoResposta);
+
+            exchange.addHeader("Content-Type", "application/json");
+            exchange.sendResponseHeaders(200, json.length());
+            exchange.setBody(json);
         } catch (SQLException e) {
             exchange.sendResponseHeaders(500, 0);
         } catch (Exception e) {
@@ -46,19 +49,14 @@ final class TransacaoHttpHandler implements HttpHandler {
         }
     }
 
-    private void doGet(CustomHttpExchange exchange, int id) {
+    private void doGet(CustomHttpExchange exchange, int clienteId) {
         try {
-            var optionalJson = DataSource.findById(id)
-                    .map(TransacaoMapper::map);
+            var extrato = DataSource.extrato(clienteId);
+            var json = TransacaoMapper.map(extrato);
 
-            if (optionalJson.isPresent()) {
-                var json = optionalJson.get();
-                exchange.addHeader("Content-Type", "application/json");
-                exchange.sendResponseHeaders(200, json.length());
-                exchange.setBody(json);
-            } else {
-                exchange.sendResponseHeaders(404, 0);
-            }
+            exchange.addHeader("Content-Type", "application/json");
+            exchange.sendResponseHeaders(200, json.length());
+            exchange.setBody(json);
         } finally {
             exchange.close();
         }
