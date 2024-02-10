@@ -4,9 +4,8 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 import java.time.LocalDate;
-import java.util.List;
 
-final class PessoaMapper {
+final class TransacaoMapper {
 
     private static final Gson GSON = new GsonBuilder()
             .serializeNulls()
@@ -14,23 +13,19 @@ final class PessoaMapper {
             .registerTypeAdapter(LocalDate.class, new LocalDateAdapter())
             .create();
 
-    private PessoaMapper() {
+    private TransacaoMapper() {
     }
 
-    static Pessoa map(String json) throws Exception {
-        var pessoa = GSON.fromJson(json, Pessoa.class);
-        if (!pessoa.isValid()) {
+    static TransacaoRequisicao map(String json) throws Exception {
+        var transacaoRequisicao = GSON.fromJson(json, TransacaoRequisicao.class);
+        if (!transacaoRequisicao.ehValido()) {
             throw new Exception("Dados invalidos");
         }
-        return pessoa;
+        return transacaoRequisicao;
     }
 
-    static String map(List<Pessoa> pessoas) {
-        return GSON.toJson(pessoas);
-    }
-
-    static String map(Pessoa pessoa) {
-        return GSON.toJson(pessoa);
+    static String map(ExtratoResposta extratoResposta) {
+        return GSON.toJson(extratoResposta);
     }
 
 }

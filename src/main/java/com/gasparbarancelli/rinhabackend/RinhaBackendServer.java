@@ -19,8 +19,8 @@ public class RinhaBackendServer {
 
     public void startServer() throws IOException {
         var httpServer = HttpServer.create(httpPort(), 0);
-        httpServer.createContext("/pessoas", new PessoasHttpHandler());
-        httpServer.createContext("/contagem-pessoas", new ContagemPessoasHttpHandler());
+        httpServer.createContext("/pessoas", new TransacaoHttpHandler());
+        httpServer.createContext("/contagem-pessoas", new ExtratoHttpHandler());
         httpServer.setExecutor(Executors.newVirtualThreadPerTaskExecutor());
         httpServer.start();
     }
