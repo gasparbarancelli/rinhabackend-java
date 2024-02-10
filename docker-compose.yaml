@@ -62,7 +62,7 @@ services:
       - POSTGRES_DB=rinha-backend
     ports:
       - '5432:5432'
-    command: ["postgres", "-c", "logging_collector=false", "-c", "max_connections=30"]
+    command: ["postgres", "-c", "wal_level=logical",  "-c", "bgwriter_lru_maxpages=1000", "-c", "synchronous_commit=0", "-c", "max_connections=30"]
     volumes:
       - ./import.sql:/docker-entrypoint-initdb.d/script.sql
     deploy:
