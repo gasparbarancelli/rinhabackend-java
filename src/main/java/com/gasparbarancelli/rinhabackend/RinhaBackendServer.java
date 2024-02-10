@@ -25,6 +25,8 @@ public class RinhaBackendServer {
             return;
         }
 
+        DataSource.warm();
+
         var httpServer = HttpServer.create(socketAddress.get(), 0);
         httpServer.createContext("/clientes", new TransacaoHttpHandler());
         httpServer.setExecutor(Executors.newVirtualThreadPerTaskExecutor());

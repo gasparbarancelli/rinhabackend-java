@@ -75,6 +75,12 @@ final class DataSource {
     private DataSource() {
     }
 
+    static void warm() {
+        for (int i = 1; i < 5; i++) {
+             extrato(i);
+        }
+    }
+
     static ExtratoResposta extrato(int clienteId) {
         try (var con = hikariDataSource.getConnection();
              var stmtFindCliente = con.prepareStatement(SQL_CLIENTE_FIND_BY_ID);
@@ -137,35 +143,37 @@ final class DataSource {
     }
 
     static TransacaoResposta insert(Transacao transacao) throws SQLException {
-        try (var con = hikariDataSource.getConnection();
-             var stsSelect = con.prepareStatement(SQL_CLIENTE_FIND_BY_ID_FOR_UPDATE);
-             var stmt = con.prepareStatement(SQL_INSERT_TRANSACAO);
-             var stmtUpdateCliente = con.prepareStatement(SQL_UPDATE_CLIENTE)) {
+        try (var con = hikariDataSource.getConnection()) {
             con.setAutoCommit(false);
 
-            var cliente = getCliente(1, stsSelect);
+            try (var stmtClienteFind = con.prepareStatement(SQL_CLIENTE_FIND_BY_ID_FOR_UPDATE);
+                 var stmtTransacaoInsert = con.prepareStatement(SQL_INSERT_TRANSACAO);
+                 var stmtClienteUpdate = con.prepareStatement(SQL_UPDATE_CLIENTE)) {
 
-            stmt.setInt(1, transacao.cliente());
-            stmt.setInt(2, transacao.valor());
-            stmt.setString(3, transacao.tipo().name());
-            stmt.setString(4, transacao.descricao());
-            stmt.setTimestamp(5, Timestamp.valueOf(transacao.data()));
-            stmt.executeUpdate();
+                var cliente = getCliente(1, stmtClienteFind);
 
-            stmtUpdateCliente.setInt(1, transacao.valor());
-            stmtUpdateCliente.setInt(2, transacao.cliente());
-            stmtUpdateCliente.executeUpdate();
+                stmtTransacaoInsert.setInt(1, transacao.cliente());
+                stmtTransacaoInsert.setInt(2, transacao.valor());
+                stmtTransacaoInsert.setString(3, transacao.tipo().name());
+                stmtTransacaoInsert.setString(4, transacao.descricao());
+                stmtTransacaoInsert.setTimestamp(5, Timestamp.valueOf(transacao.data()));
+                stmtTransacaoInsert.executeUpdate();
 
-            con.commit();
+                stmtClienteUpdate.setInt(1, transacao.valor());
+                stmtClienteUpdate.setInt(2, transacao.cliente());
+                stmtClienteUpdate.executeUpdate();
 
-            var saldo = cliente.saldo();
-            if (TipoTransacao.d.equals(transacao.tipo())) {
-                saldo = saldo - transacao.valor();
-            } else {
-                saldo = saldo + transacao.valor();
+                con.commit();
+
+                var saldo = cliente.saldo();
+                if (TipoTransacao.d.equals(transacao.tipo())) {
+                    saldo = saldo - transacao.valor();
+                } else {
+                    saldo = saldo + transacao.valor();
+                }
+
+                return new TransacaoResposta(cliente.limite(), saldo);
             }
-
-            return new TransacaoResposta(cliente.limite(), saldo);
         }
     }
 
