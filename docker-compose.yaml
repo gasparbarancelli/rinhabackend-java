@@ -16,8 +16,6 @@ services:
         limits:
           cpus: "0.35"
           memory: "100MB"
-    logging:
-      driver: none
 
   api2:
     container_name: api2
@@ -35,8 +33,6 @@ services:
         limits:
           cpus: "0.35"
           memory: "100MB"
-    logging:
-      driver: none
 
   envoy:
     container_name: envoy
