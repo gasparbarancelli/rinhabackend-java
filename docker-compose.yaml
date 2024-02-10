@@ -2,10 +2,10 @@ services:
 
   api1:
     container_name: api1
-    image: gasparbarancelli/rinha-backend-2024:latest
+    image: gasparbarancelli/rinha-2024-java-nativo:latest
     environment:
-      - DATABASE_HOSTNAME=db
-      - QUARKUS_HTTP_PORT=8081
+      - DATABASE_HOST=db
+      - HTTP_PORT=8081
     ports:
       - '8081:8081'
     depends_on:
@@ -21,10 +21,10 @@ services:
 
   api2:
     container_name: api2
-    image: gasparbarancelli/rinha-backend-2024:latest
+    image: gasparbarancelli/rinha-2024-java-nativo:latest
     environment:
-      - DATABASE_HOSTNAME=db
-      - QUARKUS_HTTP_PORT=8082
+      - DATABASE_HOST=db
+      - HTTP_PORT=8082
     ports:
       - '8082:8082'
     depends_on:
