@@ -54,7 +54,7 @@ final class DataSource {
                 .orElse("localhost");
 
         HikariConfig config = new HikariConfig();
-        config.setJdbcUrl("jdbc:postgresql://" + host + "/rinha-backend?loggerLevel=OFF");
+        config.setJdbcUrl("jdbc:postgresql://" + host + "/rinha-backend?loggerLevel=OFF&autocommit=false");
         config.setUsername("rinha");
         config.setPassword("backend");
         config.addDataSourceProperty("minimumIdle", "5");
@@ -139,13 +139,8 @@ final class DataSource {
     static TransacaoResposta insert(Transacao transacao) throws Exception {
         try (var con = hikariDataSource.getConnection();
              var stmtClienteFind = con.prepareStatement(SQL_CLIENTE_FIND_BY_ID_FOR_UPDATE)) {
-            con.setAutoCommit(false);
             var cliente = getCliente(1, stmtClienteFind);
-
-            if (TipoTransacao.d.equals(transacao.tipo())
-                    && cliente.getSaldoComLimite() < transacao.valor()) {
-                throw new Exception("Dados invalidos");
-            }
+            var saldo = getSaldoAtualizado(transacao, cliente);
 
             try (var stmtTransacaoInsert = con.prepareStatement(SQL_INSERT_TRANSACAO);
                  var stmtClienteUpdate = con.prepareStatement(SQL_UPDATE_CLIENTE)) {
@@ -161,17 +156,20 @@ final class DataSource {
                 stmtClienteUpdate.executeUpdate();
 
                 con.commit();
-
-                var saldo = cliente.saldo();
-                if (TipoTransacao.d.equals(transacao.tipo())) {
-                    saldo = saldo - transacao.valor();
-                } else {
-                    saldo = saldo + transacao.valor();
-                }
-
-                return new TransacaoResposta(cliente.limite(), saldo);
             }
+
+            return new TransacaoResposta(cliente.limite(), saldo);
         }
+    }
+
+    private static int getSaldoAtualizado(Transacao transacao, Cliente cliente) throws Exception {
+        if (TipoTransacao.d.equals(transacao.tipo())) {
+            if (cliente.getSaldoComLimite() < transacao.valor()) {
+                throw new Exception("Sem limite disponivies");
+            }
+            return cliente.saldo() - transacao.valor();
+        }
+        return cliente.saldo() + transacao.valor();
     }
 
 }
