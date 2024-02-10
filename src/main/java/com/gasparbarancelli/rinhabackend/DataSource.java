@@ -54,7 +54,7 @@ final class DataSource {
                 .orElse("localhost");
 
         HikariConfig config = new HikariConfig();
-        config.setJdbcUrl("jdbc:postgresql://" + host + "/rinha-backend?loggerLevel=OFF&autocommit=false");
+        config.setJdbcUrl("jdbc:postgresql://" + host + "/rinha-backend?loggerLevel=OFF");
         config.setUsername("rinha");
         config.setPassword("backend");
         config.addDataSourceProperty("minimumIdle", "5");
@@ -139,6 +139,8 @@ final class DataSource {
     static TransacaoResposta insert(Transacao transacao) throws Exception {
         try (var con = hikariDataSource.getConnection();
              var stmtClienteFind = con.prepareStatement(SQL_CLIENTE_FIND_BY_ID_FOR_UPDATE)) {
+            con.setAutoCommit(false);
+
             var cliente = getCliente(1, stmtClienteFind);
             var saldo = getSaldoAtualizado(transacao, cliente);
 
