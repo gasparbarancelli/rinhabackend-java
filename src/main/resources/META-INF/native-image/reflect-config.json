@@ -3,5 +3,25 @@
     "name": "com.gasparbarancelli.rinhabackend.TransacaoRequisicao",
     "allDeclaredConstructors": true,
     "allPublicMethods": true
+  },
+  {
+    "name": "com.gasparbarancelli.rinhabackend.TransacaoResposta",
+    "allDeclaredConstructors": true,
+    "allPublicMethods": true
+  },
+  {
+    "name": "com.gasparbarancelli.rinhabackend.ExtratoResposta",
+    "allDeclaredConstructors": true,
+    "allPublicMethods": true
+  },
+  {
+    "name": "com.gasparbarancelli.rinhabackend.ExtratoResposta.ExtratoSaldoResposta",
+    "allDeclaredConstructors": true,
+    "allPublicMethods": true
+  },
+  {
+    "name": "com.gasparbarancelli.rinhabackend.ExtratoResposta.ExtratoTransacaoResposta",
+    "allDeclaredConstructors": true,
+    "allPublicMethods": true
   }
 ]
