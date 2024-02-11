@@ -40,8 +40,8 @@ final class DataSource {
         config.setJdbcUrl("jdbc:postgresql://" + host + "/rinha-backend?loggerLevel=OFF");
         config.setUsername("rinha");
         config.setPassword("backend");
-        config.addDataSourceProperty("minimumIdle", "15");
-        config.addDataSourceProperty("maximumPoolSize", "15");
+        config.addDataSourceProperty("minimumIdle", "50");
+        config.addDataSourceProperty("maximumPoolSize", "1000");
         config.addDataSourceProperty("cachePrepStmts", "true");
         config.addDataSourceProperty("prepStmtCacheSize", "250");
         config.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");
@@ -126,7 +126,6 @@ final class DataSource {
             statement.setString(2, transacao.tipo().name());
             statement.setInt(3, transacao.valor());
             statement.setString(4, transacao.descricao());
-
             try (ResultSet resultSet = statement.executeQuery()) {
                 resultSet.next();
                 int novoSaldo = resultSet.getInt(1);
