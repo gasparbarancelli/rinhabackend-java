@@ -33,7 +33,7 @@ DECLARE
     novoSaldo int;
 BEGIN
 
-    SELECT * INTO cliente FROM cliente WHERE id = clienteIdParam FOR UPDATE;
+    SELECT saldo, limite INTO novoSaldo, limite FROM cliente WHERE id = clienteIdParam FOR UPDATE SKIP LOCKED;
 
     IF tipoParam = 'd' THEN
         IF (cliente.saldo + cliente.limite) < valorParam THEN
