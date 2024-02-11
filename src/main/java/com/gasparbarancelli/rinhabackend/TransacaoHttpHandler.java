@@ -4,7 +4,6 @@ import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 
 import java.io.IOException;
-import java.sql.SQLException;
 
 final class TransacaoHttpHandler implements HttpHandler {
 
@@ -41,8 +40,6 @@ final class TransacaoHttpHandler implements HttpHandler {
             exchange.addHeader("Content-Type", "application/json");
             exchange.sendResponseHeaders(200, json.length());
             exchange.setBody(json);
-        } catch (SQLException e) {
-            exchange.sendResponseHeaders(500, 0);
         } catch (Exception e) {
             exchange.sendResponseHeaders(422, 0);
         } finally {
