@@ -19,16 +19,17 @@ final class TransacaoHttpHandler implements HttpHandler {
         var id = Integer.parseInt(split[2]);
 
         if (Cliente.naoExiste(id)) {
-            exchange.sendResponseHeaders(404, 0);
-            exchange.close();
+            customExchange.sendResponseHeaders(404, 0);
+            customExchange.close();
             return;
         }
 
         if (customExchange.isPost()) {
             doPost(customExchange, id);
-        } else if (customExchange.isGet()) {
-            doGet(customExchange, id);
+            return;
         }
+
+        doGet(customExchange, id);
     }
 
     private void doPost(CustomHttpExchange exchange, int clienteId) {
