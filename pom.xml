@@ -72,10 +72,8 @@
                             <fallback>false</fallback>
                             <buildArgs>
                                 <buildArg>--gc=G1</buildArg>
-                                <buildArg>--pgo-instrument</buildArg>
+                                <buildArg>--pgo</buildArg>
                                 <buildArg>-march=native</buildArg>
-                                <buildArg>-R:MaxHeapSize=60m</buildArg>
-                                <buildArg>-H:DashboardDump=rinhaBackend -H:+DashboardAll</buildArg>
                             </buildArgs>
                             <agent>
                                 <enabled>true</enabled>

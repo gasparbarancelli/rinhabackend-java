@@ -12,7 +12,6 @@ final class CustomHttpExchange {
 
     public CustomHttpExchange(HttpExchange exchange) {
         this.exchange = exchange;
-        exchange.getResponseHeaders().add("Content-Type", "application/json");
     }
 
     boolean isPost() {
@@ -29,6 +28,17 @@ final class CustomHttpExchange {
 
     String getPath() {
         return exchange.getRequestURI().getPath();
+    }
+
+    void addHeader(String key, String value) {
+        exchange.getResponseHeaders().add(key, value);
+    }
+
+    void close() {
+        try {
+            exchange.getResponseBody().close();
+        } catch (IOException ignore) {
+        }
     }
 
     String getBody() {
