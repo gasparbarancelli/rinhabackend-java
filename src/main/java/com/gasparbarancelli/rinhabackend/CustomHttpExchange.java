@@ -5,12 +5,8 @@ import com.sun.net.httpserver.HttpExchange;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 final class CustomHttpExchange {
-
-    private static final Logger LOGGER = Logger.getLogger(CustomHttpExchange.class.getName());
 
     private final HttpExchange exchange;
 
@@ -31,8 +27,7 @@ final class CustomHttpExchange {
     void sendResponseHeaders(int rCode, long responseLength) {
         try {
             exchange.sendResponseHeaders(rCode, responseLength);
-        } catch (IOException e) {
-            LOGGER.log(Level.SEVERE, e.getMessage());
+        } catch (IOException ignore) {
         }
     }
 
@@ -47,8 +42,7 @@ final class CustomHttpExchange {
     void close() {
         try {
             exchange.getResponseBody().close();
-        } catch (IOException e) {
-            LOGGER.log(Level.SEVERE, e.getMessage());
+        } catch (IOException ignore) {
         }
     }
 
@@ -56,7 +50,6 @@ final class CustomHttpExchange {
         try {
             return new String(exchange.getRequestBody().readAllBytes(), StandardCharsets.UTF_8);
         } catch (IOException e) {
-            LOGGER.log(Level.SEVERE, e.getMessage());
             sendResponseHeaders(400, 0);
             throw new RuntimeException(e);
         }
@@ -67,8 +60,7 @@ final class CustomHttpExchange {
             OutputStream os = exchange.getResponseBody();
             os.write(body.getBytes(StandardCharsets.UTF_8));
             os.close();
-        } catch (IOException e) {
-            LOGGER.log(Level.SEVERE, e.getMessage());
+        } catch (IOException ignore) {
             sendResponseHeaders(500, 0);
         }
     }
