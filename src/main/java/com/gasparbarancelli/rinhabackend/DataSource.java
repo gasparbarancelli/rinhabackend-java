@@ -3,10 +3,9 @@ package com.gasparbarancelli.rinhabackend;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 
-import java.sql.CallableStatement;
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -30,7 +29,25 @@ final class DataSource {
                 LIMIT 10;
             """;
 
-    private static final String SQL_INSERT_TRANSACAO = "SELECT novosaldo, limite FROM efetuar_transacao(?, ?, ?, ?)";
+    private static final String SQL_CLIENTE_FIND_BY_ID_FOR_UPDATE = """
+                SELECT LIMITE, SALDO
+                FROM CLIENTE
+                WHERE id = ?
+                FOR UPDATE;
+            """;
+
+    private static final String SQL_INSERT_TRANSACAO = """
+            INSERT INTO TRANSACAO (
+                CLIENTE_ID,
+                VALOR,
+                TIPO,
+                DESCRICAO,
+                DATA
+            )
+            VALUES (?, ?, ?, ?, ?)
+        """;
+
+    private static final String SQL_UPDATE_CLIENTE = "UPDATE CLIENTE SET SALDO = ? WHERE ID = ?";
 
     static {
         var host = Optional.ofNullable(System.getenv("DATABASE_HOST"))
@@ -40,8 +57,8 @@ final class DataSource {
         config.setJdbcUrl("jdbc:postgresql://" + host + "/rinha-backend?loggerLevel=OFF");
         config.setUsername("rinha");
         config.setPassword("backend");
-        config.addDataSourceProperty("minimumIdle", "50");
-        config.addDataSourceProperty("maximumPoolSize", "1000");
+        config.addDataSourceProperty("minimumIdle", "5");
+        config.addDataSourceProperty("maximumPoolSize", "5");
         config.addDataSourceProperty("cachePrepStmts", "true");
         config.addDataSourceProperty("prepStmtCacheSize", "250");
         config.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");
@@ -121,21 +138,40 @@ final class DataSource {
 
     static TransacaoResposta insert(Transacao transacao) throws Exception {
         try (var con = hikariDataSource.getConnection();
-             CallableStatement statement = con.prepareCall(SQL_INSERT_TRANSACAO)) {
-            statement.setInt(1, transacao.cliente());
-            statement.setString(2, transacao.tipo().name());
-            statement.setInt(3, transacao.valor());
-            statement.setString(4, transacao.descricao());
-            try (ResultSet resultSet = statement.executeQuery()) {
-                resultSet.next();
-                int novoSaldo = resultSet.getInt(1);
-                int limite = resultSet.getInt(2);
-                return new TransacaoResposta(
-                        limite,
-                        novoSaldo
-                );
+             var stmtClienteFind = con.prepareStatement(SQL_CLIENTE_FIND_BY_ID_FOR_UPDATE)) {
+            con.setAutoCommit(false);
+
+            var cliente = getCliente(1, stmtClienteFind);
+            var saldo = getSaldoAtualizado(transacao, cliente);
+
+            try (var stmtTransacaoInsert = con.prepareStatement(SQL_INSERT_TRANSACAO);
+                 var stmtClienteUpdate = con.prepareStatement(SQL_UPDATE_CLIENTE)) {
+                stmtTransacaoInsert.setInt(1, transacao.cliente());
+                stmtTransacaoInsert.setInt(2, transacao.valor());
+                stmtTransacaoInsert.setString(3, transacao.tipo().name());
+                stmtTransacaoInsert.setString(4, transacao.descricao());
+                stmtTransacaoInsert.setTimestamp(5, Timestamp.valueOf(transacao.data()));
+                stmtTransacaoInsert.executeUpdate();
+
+                stmtClienteUpdate.setInt(1, transacao.valor());
+                stmtClienteUpdate.setInt(2, transacao.cliente());
+                stmtClienteUpdate.executeUpdate();
+
+                con.commit();
             }
+
+            return new TransacaoResposta(cliente.limite(), saldo);
         }
+    }
+
+    private static int getSaldoAtualizado(Transacao transacao, Cliente cliente) throws Exception {
+        if (TipoTransacao.d.equals(transacao.tipo())) {
+            if (cliente.getSaldoComLimite() < transacao.valor()) {
+                throw new Exception("Sem limite disponivies");
+            }
+            return cliente.saldo() - transacao.valor();
+        }
+        return cliente.saldo() + transacao.valor();
     }
 
 }
