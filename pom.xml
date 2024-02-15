@@ -72,7 +72,7 @@
                             <fallback>false</fallback>
                             <buildArgs>
                                 <buildArg>--gc=G1</buildArg>
-                                <buildArg>--pgo</buildArg>
+                                <buildArg>--pgo-instrument</buildArg>
                                 <buildArg>-march=native</buildArg>
                             </buildArgs>
                             <agent>
