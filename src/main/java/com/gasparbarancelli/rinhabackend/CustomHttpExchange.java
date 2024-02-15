@@ -12,16 +12,12 @@ final class CustomHttpExchange {
 
     public CustomHttpExchange(HttpExchange exchange) {
         this.exchange = exchange;
+        exchange.getResponseHeaders().add("Content-Type", "application/json");
     }
 
     boolean isPost() {
         var method = exchange.getRequestMethod();
         return "POST".equals(method);
-    }
-
-    boolean isGet() {
-        var method = exchange.getRequestMethod();
-        return "GET".equals(method);
     }
 
     void sendResponseHeaders(int rCode, long responseLength) {
@@ -33,17 +29,6 @@ final class CustomHttpExchange {
 
     String getPath() {
         return exchange.getRequestURI().getPath();
-    }
-
-    void addHeader(String key, String value) {
-        exchange.getResponseHeaders().add(key, value);
-    }
-
-    void close() {
-        try {
-            exchange.getResponseBody().close();
-        } catch (IOException ignore) {
-        }
     }
 
     String getBody() {
