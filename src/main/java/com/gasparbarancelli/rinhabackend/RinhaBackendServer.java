@@ -29,6 +29,10 @@ public class RinhaBackendServer {
             config.http.asyncTimeout = 10_000L;
         }).get("/clientes/{clienteId}/extrato", ctx -> {
             var clienteId = Integer.parseInt(ctx.pathParam("clienteId"));
+            if (Cliente.naoExiste(clienteId)) {
+                ctx.status(404);
+                return;
+            }
             var extrato = dataSource.extrato(clienteId);
             var json = TransacaoMapper.map(extrato);
             ctx.result(json);
@@ -37,6 +41,10 @@ public class RinhaBackendServer {
         }).post("/clientes/{clienteId}/transacoes", ctx -> {
             try {
                 var clienteId = Integer.parseInt(ctx.pathParam("clienteId"));
+                if (Cliente.naoExiste(clienteId)) {
+                    ctx.status(404);
+                    return;
+                }
                 var body = ctx.body();
                 var transacaoRequisicao = TransacaoMapper.map(body);
                 var transacaoResposta = dataSource.insert(transacaoRequisicao.geraTransacao(clienteId));
