@@ -10,8 +10,6 @@ public class RinhaBackendServer {
 
     private static final Logger LOGGER = Logger.getLogger(RinhaBackendServer.class.getName());
 
-    private final DataSource dataSource = new DataSource();
-
     public static void main(String[] args) {
         LOGGER.info("Iniciando aplicacao");
         new RinhaBackendServer().startServer();
@@ -23,6 +21,10 @@ public class RinhaBackendServer {
             LOGGER.info("Defina a variavel de ambiente HTTP_PORT para iniciar o servidor web");
             return;
         }
+
+        LOGGER.info("Servidor http iniciado na porta " + portNumber.get());
+
+        DataSource dataSource = new DataSource();
 
         Javalin.create(config -> {
             config.useVirtualThreads = true;
