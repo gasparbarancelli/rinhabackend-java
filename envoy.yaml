@@ -15,7 +15,9 @@ static_resources:
                     - name: local_service
                       domains: ["*"]
                       routes:
-                        - match: { prefix: "/" }
+                        - match:
+                            prefix: "/"
+                            regex: "^/clientes/([1-5])$"
                           route:
                             cluster: api
                             timeout: 0s
