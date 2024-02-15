@@ -12,8 +12,8 @@ services:
     deploy:
       resources:
         limits:
-          cpus: "0.35"
-          memory: "90MB"
+          cpus: "0.30"
+          memory: "70MB"
 
   api2:
     container_name: api2
@@ -27,12 +27,12 @@ services:
     deploy:
       resources:
         limits:
-          cpus: "0.35"
-          memory: "90MB"
+          cpus: "0.30"
+          memory: "70MB"
 
   envoy:
     container_name: envoy
-    image: envoyproxy/envoy:v1.20.0
+    image: envoyproxy/envoy:v1.29.1
     network_mode: host
     volumes:
       - ./envoy.yaml:/etc/envoy/envoy.yaml
@@ -54,14 +54,14 @@ services:
       - POSTGRES_PASSWORD=backend
       - POSTGRES_USER=rinha
       - POSTGRES_DB=rinha-backend
-    command: 'postgres -c max_connections=1000 -c work_mem=8MB -c hot_standby=off -c shared_buffers=135MB -c checkpoint_timeout=1d -c wal_level=minimal -c synchronous_commit=off -c fsync=off -c full_page_writes=off -c max_wal_senders=0'
+    command: 'postgres -c max_connections=1000 -c work_mem=8MB -c hot_standby=off -c shared_buffers=155MB -c checkpoint_timeout=1d -c wal_level=minimal -c synchronous_commit=off -c fsync=off -c full_page_writes=off -c max_wal_senders=0'
     volumes:
       - ./import.sql:/docker-entrypoint-initdb.d/script.sql
     deploy:
       resources:
         limits:
-          cpus: "0.6"
-          memory: "270MB"
+          cpus: "0.7"
+          memory: "310MB"
     healthcheck:
       test: ["CMD-SHELL", "pg_isready"]
       interval: 5s

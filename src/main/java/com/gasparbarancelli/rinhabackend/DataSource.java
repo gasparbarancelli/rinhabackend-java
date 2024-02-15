@@ -57,8 +57,8 @@ final class DataSource {
         config.setJdbcUrl("jdbc:postgresql://" + host + "/rinha-backend?loggerLevel=OFF");
         config.setUsername("rinha");
         config.setPassword("backend");
-        config.addDataSourceProperty("minimumIdle", "5");
-        config.addDataSourceProperty("maximumPoolSize", "5");
+        config.addDataSourceProperty("minimumIdle", "50");
+        config.addDataSourceProperty("maximumPoolSize", "50");
         config.addDataSourceProperty("cachePrepStmts", "true");
         config.addDataSourceProperty("prepStmtCacheSize", "250");
         config.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");
@@ -137,30 +137,31 @@ final class DataSource {
     }
 
     static TransacaoResposta insert(Transacao transacao) throws Exception {
-        try (var con = hikariDataSource.getConnection();
-             var stmtClienteFind = con.prepareStatement(SQL_CLIENTE_FIND_BY_ID_FOR_UPDATE)) {
+        try (var con = hikariDataSource.getConnection()) {
             con.setAutoCommit(false);
 
-            var cliente = getCliente(1, stmtClienteFind);
-            var saldo = getSaldoAtualizado(transacao, cliente);
+            try (var stmtClienteFind = con.prepareStatement(SQL_CLIENTE_FIND_BY_ID_FOR_UPDATE)) {
+                var cliente = getCliente(1, stmtClienteFind);
+                var saldo = getSaldoAtualizado(transacao, cliente);
 
-            try (var stmtTransacaoInsert = con.prepareStatement(SQL_INSERT_TRANSACAO);
-                 var stmtClienteUpdate = con.prepareStatement(SQL_UPDATE_CLIENTE)) {
-                stmtTransacaoInsert.setInt(1, transacao.cliente());
-                stmtTransacaoInsert.setInt(2, transacao.valor());
-                stmtTransacaoInsert.setString(3, transacao.tipo().name());
-                stmtTransacaoInsert.setString(4, transacao.descricao());
-                stmtTransacaoInsert.setTimestamp(5, Timestamp.valueOf(transacao.data()));
-                stmtTransacaoInsert.executeUpdate();
+                try (var stmtTransacaoInsert = con.prepareStatement(SQL_INSERT_TRANSACAO);
+                     var stmtClienteUpdate = con.prepareStatement(SQL_UPDATE_CLIENTE)) {
+                    stmtTransacaoInsert.setInt(1, transacao.cliente());
+                    stmtTransacaoInsert.setInt(2, transacao.valor());
+                    stmtTransacaoInsert.setString(3, transacao.tipo().name());
+                    stmtTransacaoInsert.setString(4, transacao.descricao());
+                    stmtTransacaoInsert.setTimestamp(5, Timestamp.valueOf(transacao.data()));
+                    stmtTransacaoInsert.executeUpdate();
 
-                stmtClienteUpdate.setInt(1, transacao.valor());
-                stmtClienteUpdate.setInt(2, transacao.cliente());
-                stmtClienteUpdate.executeUpdate();
+                    stmtClienteUpdate.setInt(1, transacao.valor());
+                    stmtClienteUpdate.setInt(2, transacao.cliente());
+                    stmtClienteUpdate.executeUpdate();
 
-                con.commit();
+                    con.commit();
+                }
+
+                return new TransacaoResposta(cliente.limite(), saldo);
             }
-
-            return new TransacaoResposta(cliente.limite(), saldo);
         }
     }
 
