@@ -71,6 +71,7 @@
                             <imageName>${imageName}</imageName>
                             <fallback>false</fallback>
                             <buildArgs>
+                                <buildArg>--gc=G1</buildArg>
                                 <buildArg>-H:DashboardDump=rinhaBackend -H:+DashboardAll</buildArg>
                             </buildArgs>
                             <agent>
