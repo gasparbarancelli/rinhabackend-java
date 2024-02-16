@@ -18,9 +18,9 @@
     </properties>
     <dependencies>
         <dependency>
-            <groupId>io.javalin</groupId>
-            <artifactId>javalin</artifactId>
-            <version>6.0.1</version>
+            <groupId>com.sparkjava</groupId>
+            <artifactId>spark-core</artifactId>
+            <version>2.9.4</version>
         </dependency>
         <dependency>
             <groupId>org.postgresql</groupId>

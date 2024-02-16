@@ -1,10 +1,10 @@
 package com.gasparbarancelli.rinhabackend;
 
-import io.javalin.Javalin;
-
 import java.util.Objects;
 import java.util.Optional;
 import java.util.logging.Logger;
+
+import static spark.Spark.*;
 
 public class RinhaBackendServer {
 
@@ -26,39 +26,41 @@ public class RinhaBackendServer {
 
         DataSource dataSource = new DataSource();
 
-        Javalin.create(config -> {
-            config.useVirtualThreads = true;
-            config.http.asyncTimeout = 10_000L;
-        }).get("/clientes/{clienteId}/extrato", ctx -> {
-            var clienteId = Integer.parseInt(ctx.pathParam("clienteId"));
+        port(portNumber.get());
+
+        get("/clientes/:clienteId/extrato", (request, response) -> {
+            var clienteId = Integer.parseInt(request.params(":clienteId"));
             if (Cliente.naoExiste(clienteId)) {
-                ctx.status(404);
-                return;
+                response.status(404);
+                return "cliente nao existe";
             }
             var extrato = dataSource.extrato(clienteId);
             var json = TransacaoMapper.map(extrato);
-            ctx.result(json);
-            ctx.status(200);
-            ctx.contentType("application/json");
-        }).post("/clientes/{clienteId}/transacoes", ctx -> {
+            response.status(200);
+            response.type("application/json");
+            return json;
+        });
+
+        post("/clientes/{clienteId}/transacoes", (request, response) -> {
             try {
-                var clienteId = Integer.parseInt(ctx.pathParam("clienteId"));
+                var clienteId = Integer.parseInt(request.params(":clienteId"));
                 if (Cliente.naoExiste(clienteId)) {
-                    ctx.status(404);
-                    return;
+                    response.status(404);
+                    return "cliente nao existe";
                 }
-                var body = ctx.body();
+                var body = request.body();
                 var transacaoRequisicao = TransacaoMapper.map(body);
                 var transacaoResposta = dataSource.insert(transacaoRequisicao.geraTransacao(clienteId));
 
                 var json = TransacaoMapper.map(transacaoResposta);
-                ctx.result(json);
-                ctx.status(200);
-                ctx.contentType("application/json");
+                response.status(200);
+                response.type("application/json");
+                return json;
             } catch (Exception e) {
-                ctx.status(422);
+                response.status(422);
+                return "dados invalidos";
             }
-        }).start(portNumber.get());
+        });
     }
 
     private Optional<Integer> getPortNumber() {

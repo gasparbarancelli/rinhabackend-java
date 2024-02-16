@@ -2,7 +2,7 @@ services:
 
   api1:
     container_name: api1
-    image: gasparbarancelli/rinha-2024-java-nativo:latest
+    image: gasparbarancelli/rinha-2024-spark:latest
     network_mode: host
     environment:
       - HTTP_PORT=8081
@@ -17,7 +17,7 @@ services:
 
   api2:
     container_name: api2
-    image: gasparbarancelli/rinha-2024-java-nativo:latest
+    image: gasparbarancelli/rinha-2024-spark:latest
     network_mode: host
     environment:
       - HTTP_PORT=8082
