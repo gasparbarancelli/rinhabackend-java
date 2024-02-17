@@ -21,3 +21,41 @@ VALUES (1, 100000),
        (3, 1000000),
        (4, 10000000),
        (5, 500000);
+
+
+CREATE OR REPLACE FUNCTION efetuar_transacao(
+    clienteIdParam int,
+    tipoParam varchar(1),
+    valorParam int,
+    descricaoParam varchar(10)
+)
+RETURNS TABLE (saldoRetorno int, limiteRetorno int) AS $$
+DECLARE
+    cliente cliente%rowtype;
+    novoSaldo int;
+    num_linhas_afetadas int;
+BEGIN
+
+    INSERT INTO transacao (cliente_id, valor, tipo, descricao, data)
+    VALUES (clienteIdParam, valorParam, tipoParam, descricaoParam, current_timestamp);
+
+    IF tipoParam = 'd' THEN
+            novoSaldo := valorParam * -1;
+    ELSE
+            novoSaldo := valorParam;
+    END IF;
+
+    UPDATE cliente SET saldo = saldo + novoSaldo
+    WHERE id = clienteIdParam AND (novoSaldo > 0 OR limite * -1 <= saldo + novoSaldo)
+        RETURNING * INTO cliente;
+
+    GET DIAGNOSTICS num_linhas_afetadas = ROW_COUNT;
+
+    IF num_linhas_afetadas = 0 THEN
+            RAISE EXCEPTION 'Cliente nao possui limite';
+    END IF;
+
+
+    RETURN QUERY SELECT cliente.saldo, cliente.limite;
+END;
+$$ LANGUAGE plpgsql;

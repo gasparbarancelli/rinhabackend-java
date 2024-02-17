@@ -3,9 +3,10 @@ package com.gasparbarancelli.rinhabackend;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 
+import java.sql.CallableStatement;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -15,13 +16,13 @@ final class DataSource {
 
     private final HikariDataSource hikariDataSource;
 
-    private final String SQL_CLIENTE_FIND_BY_ID = """
+    private static final String SQL_CLIENTE_FIND_BY_ID = """
                 SELECT LIMITE, SALDO
                 FROM CLIENTE
                 WHERE id = ?
             """;
 
-    private final String SQL_TRANSACAO_FIND = """
+    private static final String SQL_TRANSACAO_FIND = """
                 SELECT VALOR, TIPO, DESCRICAO, DATA
                 FROM TRANSACAO
                 WHERE CLIENTE_ID = ?
@@ -29,25 +30,7 @@ final class DataSource {
                 LIMIT 10;
             """;
 
-    private final String SQL_CLIENTE_FIND_BY_ID_FOR_UPDATE = """
-                SELECT LIMITE, SALDO
-                FROM CLIENTE
-                WHERE id = ?
-                FOR UPDATE;
-            """;
-
-    private final String SQL_INSERT_TRANSACAO = """
-            INSERT INTO TRANSACAO (
-                CLIENTE_ID,
-                VALOR,
-                TIPO,
-                DESCRICAO,
-                DATA
-            )
-            VALUES (?, ?, ?, ?, ?)
-        """;
-
-    private final String SQL_UPDATE_CLIENTE = "UPDATE CLIENTE SET SALDO = ? WHERE ID = ?";
+    private static final String SQL_INSERT_TRANSACAO = "SELECT saldoRetorno, limiteRetorno FROM efetuar_transacao(?, ?, ?, ?)";
 
     public DataSource() {
         var host = Optional.ofNullable(System.getenv("DATABASE_HOST"))
@@ -57,10 +40,9 @@ final class DataSource {
         config.setJdbcUrl("jdbc:postgresql://" + host + "/rinha-backend?loggerLevel=OFF");
         config.setUsername("rinha");
         config.setPassword("backend");
-        config.setMaximumPoolSize(50);
         config.setAutoCommit(false);
         config.addDataSourceProperty("minimumIdle", "50");
-        config.addDataSourceProperty("maximumPoolSize", "50");
+        config.addDataSourceProperty("maximumPoolSize", "1000");
         config.addDataSourceProperty("cachePrepStmts", "true");
         config.addDataSourceProperty("prepStmtCacheSize", "250");
         config.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");
@@ -122,7 +104,6 @@ final class DataSource {
                 var descricao = resultSet.getString(3);
                 var data = resultSet.getTimestamp(4);
 
-
                 var transacao = new ExtratoTransacaoResposta(
                         valor,
                         TipoTransacao.valueOf(tipo),
@@ -136,42 +117,23 @@ final class DataSource {
     }
 
     public TransacaoResposta insert(Transacao transacao) throws Exception {
-        try (var con = hikariDataSource.getConnection()) {
-            try (var stmtClienteFind = con.prepareStatement(SQL_CLIENTE_FIND_BY_ID_FOR_UPDATE)) {
-                var cliente = getCliente(1, stmtClienteFind);
-                var saldo = getSaldoAtualizado(transacao, cliente);
-
-                try (var stmtTransacaoInsert = con.prepareStatement(SQL_INSERT_TRANSACAO);
-                     var stmtClienteUpdate = con.prepareStatement(SQL_UPDATE_CLIENTE)) {
-                    stmtTransacaoInsert.setInt(1, transacao.cliente());
-                    stmtTransacaoInsert.setInt(2, transacao.valor());
-                    stmtTransacaoInsert.setString(3, transacao.tipo().name());
-                    stmtTransacaoInsert.setString(4, transacao.descricao());
-                    stmtTransacaoInsert.setTimestamp(5, Timestamp.valueOf(transacao.data()));
-                    stmtTransacaoInsert.executeUpdate();
-
-                    stmtClienteUpdate.setInt(1, transacao.valor());
-                    stmtClienteUpdate.setInt(2, transacao.cliente());
-                    stmtClienteUpdate.executeUpdate();
-                    con.commit();
-                }
-
-                return new TransacaoResposta(cliente.limite(), saldo);
-            } catch (Exception e) {
-                con.rollback();
-                throw e;
+        try (var con = hikariDataSource.getConnection();
+             CallableStatement statement = con.prepareCall(SQL_INSERT_TRANSACAO)) {
+            statement.setInt(1, transacao.cliente());
+            statement.setString(2, transacao.tipo().name());
+            statement.setInt(3, transacao.valor());
+            statement.setString(4, transacao.descricao());
+            try (ResultSet resultSet = statement.executeQuery()) {
+                resultSet.next();
+                int novoSaldo = resultSet.getInt(1);
+                int limite = resultSet.getInt(2);
+                con.commit();
+                return new TransacaoResposta(
+                        limite,
+                        novoSaldo
+                );
             }
         }
-    }
-
-    private int getSaldoAtualizado(Transacao transacao, Cliente cliente) throws Exception {
-        if (TipoTransacao.d.equals(transacao.tipo())) {
-            if (cliente.getSaldoComLimite() < transacao.valor()) {
-                throw new Exception("Sem limite disponivies");
-            }
-            return cliente.saldo() - transacao.valor();
-        }
-        return cliente.saldo() + transacao.valor();
     }
 
 }
