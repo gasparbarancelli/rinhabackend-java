@@ -2,16 +2,11 @@ package com.gasparbarancelli.rinhabackend;
 
 import java.time.format.DateTimeFormatter;
 
-import static java.lang.StringTemplate.STR;
-
 final class TransacaoMapper {
 
-    final static DateTimeFormatter DATETIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'hh:mm:ss.SSS'Z'");
+    private final static DateTimeFormatter DATETIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'hh:mm:ss.SSS'Z'");
 
-    private TransacaoMapper() {
-    }
-
-    static TransacaoRequisicao map(String json) throws Exception {
+    public TransacaoRequisicao map(String json) throws Exception {
         json = json.replaceAll("[{}\"]", "");
         String[] keyValuePairs = json.split(",");
 
@@ -42,7 +37,7 @@ final class TransacaoMapper {
         return new TransacaoRequisicao(valor, tipo, descricao);
     }
 
-    static String map(ExtratoResposta extratoResposta) {
+    public String map(ExtratoResposta extratoResposta) {
         StringBuilder transacoes = new StringBuilder();
         extratoResposta.transacoes().forEach(transacao -> {
             if (!transacoes.isEmpty()) {
@@ -73,7 +68,7 @@ final class TransacaoMapper {
             """;
     }
 
-    static String map(TransacaoResposta transacaoResposta) {
+    public String map(TransacaoResposta transacaoResposta) {
         return STR."""
                 {
                     "limite": \{transacaoResposta.limite()},

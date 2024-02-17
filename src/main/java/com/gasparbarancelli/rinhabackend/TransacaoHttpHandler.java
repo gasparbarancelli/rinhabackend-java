@@ -8,6 +8,7 @@ import java.io.IOException;
 final class TransacaoHttpHandler implements HttpHandler {
 
     private final DataSource dataSource = new DataSource();
+    private final TransacaoMapper transacaoMapper = new TransacaoMapper();
 
     @Override
     public void handle(HttpExchange exchange) throws IOException {
@@ -35,10 +36,10 @@ final class TransacaoHttpHandler implements HttpHandler {
     private void doPost(CustomHttpExchange exchange, int clienteId) {
         try {
             var body = exchange.getBody();
-            var transacaoRequisicao = TransacaoMapper.map(body);
+            var transacaoRequisicao = transacaoMapper.map(body);
             var transacaoResposta = dataSource.insert(transacaoRequisicao.geraTransacao(clienteId));
 
-            var json = TransacaoMapper.map(transacaoResposta);
+            var json = transacaoMapper.map(transacaoResposta);
 
             exchange.addHeader("Content-Type", "application/json");
             exchange.sendResponseHeaders(200, json.length());
@@ -53,7 +54,7 @@ final class TransacaoHttpHandler implements HttpHandler {
     private void doGet(CustomHttpExchange exchange, int clienteId) {
         try {
             var extrato = dataSource.extrato(clienteId);
-            var json = TransacaoMapper.map(extrato);
+            var json = transacaoMapper.map(extrato);
 
             exchange.addHeader("Content-Type", "application/json");
             exchange.sendResponseHeaders(200, json.length());
