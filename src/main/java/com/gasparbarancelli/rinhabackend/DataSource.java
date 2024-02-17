@@ -41,8 +41,8 @@ final class DataSource {
         config.setUsername("rinha");
         config.setPassword("backend");
         config.setAutoCommit(false);
-        config.addDataSourceProperty("minimumIdle", "50");
-        config.addDataSourceProperty("maximumPoolSize", "1000");
+        config.addDataSourceProperty("minimumIdle", "15");
+        config.addDataSourceProperty("maximumPoolSize", "15");
         config.addDataSourceProperty("cachePrepStmts", "true");
         config.addDataSourceProperty("prepStmtCacheSize", "250");
         config.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");
