@@ -16,13 +16,13 @@ final class DataSource {
 
     private final HikariDataSource hikariDataSource;
 
-    private static final String SQL_CLIENTE_FIND_BY_ID = """
+    private final String SQL_CLIENTE_FIND_BY_ID = """
                 SELECT LIMITE, SALDO
                 FROM CLIENTE
                 WHERE id = ?
             """;
 
-    private static final String SQL_TRANSACAO_FIND = """
+    private final String SQL_TRANSACAO_FIND = """
                 SELECT VALOR, TIPO, DESCRICAO, DATA
                 FROM TRANSACAO
                 WHERE CLIENTE_ID = ?
@@ -30,7 +30,7 @@ final class DataSource {
                 LIMIT 10;
             """;
 
-    private static final String SQL_INSERT_TRANSACAO = "SELECT saldoRetorno, limiteRetorno FROM efetuar_transacao(?, ?, ?, ?)";
+    private final String SQL_INSERT_TRANSACAO = "SELECT saldoRetorno, limiteRetorno FROM efetuar_transacao(?, ?, ?, ?)";
 
     public DataSource() {
         var host = Optional.ofNullable(System.getenv("DATABASE_HOST"))
@@ -132,6 +132,9 @@ final class DataSource {
                         limite,
                         novoSaldo
                 );
+            } catch (Exception e) {
+                con.rollback();
+                throw e;
             }
         }
     }
