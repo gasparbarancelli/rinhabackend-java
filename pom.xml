@@ -66,9 +66,6 @@
                                 <enabled>true</enabled>
                                 <defaultMode>Standard</defaultMode>
                             </agent>
-                            <reflectConfigFiles>
-                                <reflectConfigFile>src/main/resources/META-INF/native-image/reflect-config.json</reflectConfigFile>
-                            </reflectConfigFiles>
                         </configuration>
                     </plugin>
                     <plugin>
