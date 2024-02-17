@@ -80,12 +80,15 @@ public class TransacaoMapper {
     }
 
     public String map(TransacaoResposta transacaoResposta) {
-        return STR."""
+        return """
                 {
-                    "limite": \{transacaoResposta.limite()},
-                    "saldo": \{transacaoResposta.saldo()}
+                    "limite": %d,
+                    "saldo": %d
                 }
-                """;
+                """.formatted(
+                    transacaoResposta.limite(),
+                    transacaoResposta.saldo()
+                );
     }
 
 }
