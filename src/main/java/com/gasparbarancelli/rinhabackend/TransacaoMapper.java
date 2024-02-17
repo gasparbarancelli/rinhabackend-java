@@ -1,6 +1,8 @@
 package com.gasparbarancelli.rinhabackend;
 
 import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
+import java.util.Map;
 
 public class TransacaoMapper {
 
@@ -9,32 +11,24 @@ public class TransacaoMapper {
     public TransacaoRequisicao map(String json) throws Exception {
         json = json.replaceAll("[{}\"]", "");
         String[] keyValuePairs = json.split(",");
-
-        int valor = 0;
-        TipoTransacao tipo = null;
-        String descricao = null;
-
+        Map<String, String> params = new HashMap<>(3);
         for (String pair : keyValuePairs) {
             String[] entry = pair.split(":");
             String key = entry[0].trim();
             String value = entry[1].trim();
-
-            if (key.equals("valor")) {
-                if (!Valida.valor.test(value)) {
-                    throw new Exception("Dados invalidos");
-                }
-                valor = Integer.parseInt(value);
-            } else if (key.equals("tipo")) {
-                tipo = TipoTransacao.valueOf(value);
-            } else if (key.equals("descricao")) {
-                if (!Valida.descricao.test(value)) {
-                    throw new Exception("Dados invalidos");
-                }
-                descricao = value;
-            }
+            params.put(key, value);
         }
 
-        return new TransacaoRequisicao(valor, tipo, descricao);
+        if (!Valida.valor.test(params.get("valor"))
+                || !Valida.descricao.test(params.get("descricao"))) {
+            throw new Exception("Campos invalidos");
+        }
+
+        return new TransacaoRequisicao(
+                Integer.parseInt(params.get("valor")),
+                TipoTransacao.valueOf(params.get("tipo")),
+                params.get("descricao")
+        );
     }
 
     public String map(ExtratoResposta extratoResposta) {
