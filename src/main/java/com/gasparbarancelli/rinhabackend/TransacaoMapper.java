@@ -43,29 +43,40 @@ final class TransacaoMapper {
             if (!transacoes.isEmpty()) {
                 transacoes.append(", ");
             }
-            transacoes.append(STR."""
+            transacoes.append("""
                     {
-                      "valor": \{transacao.valor()},
-                      "tipo": "\{transacao.tipo().name()}",
-                      "descricao": "\{transacao.descricao()}",
-                      "realizada_em": "\{DATETIME_FORMATTER.format(transacao.data())}"
+                      "valor": %d,
+                      "tipo": "%s",
+                      "descricao": "%s",
+                      "realizada_em": "%s}"
                     }
-                    """);
+                    """.formatted(
+                        transacao.valor(),
+                        transacao.tipo().name(),
+                        transacao.descricao(),
+                        DATETIME_FORMATTER.format(transacao.data())
+                    )
+            );
         });
 
 
-        return STR."""
+        return """
             {
               "saldo": {
-                "total": \{extratoResposta.saldo().total()},
-                "data_extrato": "\{DATETIME_FORMATTER.format(extratoResposta.saldo().data())}",
-                "limite": \{extratoResposta.saldo().limite()}
+                "total": %d,
+                "data_extrato": "%s",
+                "limite": %d
               },
               "ultimas_transacoes": [
-                \{transacoes.toString()}
+                %s
               ]
             }
-            """;
+            """.formatted(
+                extratoResposta.saldo().total(),
+                DATETIME_FORMATTER.format(extratoResposta.saldo().data()),
+                extratoResposta.saldo().limite(),
+                transacoes.toString()
+            );
     }
 
     public String map(TransacaoResposta transacaoResposta) {
