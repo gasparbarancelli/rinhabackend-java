@@ -51,10 +51,6 @@
                         <configuration>
                             <imageName>${imageName}</imageName>
                             <fallback>false</fallback>
-                            <buildArgs>
-                                <buildArg>--gc=G1</buildArg>
-                                <buildArg>-march=native</buildArg>
-                            </buildArgs>
                             <agent>
                                 <enabled>true</enabled>
                                 <defaultMode>Standard</defaultMode>
