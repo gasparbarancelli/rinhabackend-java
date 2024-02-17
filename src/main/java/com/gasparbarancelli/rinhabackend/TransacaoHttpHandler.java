@@ -5,7 +5,7 @@ import com.sun.net.httpserver.HttpHandler;
 
 import java.io.IOException;
 
-final class TransacaoHttpHandler implements HttpHandler {
+public class TransacaoHttpHandler implements HttpHandler {
 
     private final DataSource dataSource = new DataSource();
     private final TransacaoMapper transacaoMapper = new TransacaoMapper();

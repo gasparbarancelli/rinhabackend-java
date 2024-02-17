@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-final class DataSource {
+public class DataSource {
 
     private final HikariDataSource hikariDataSource;
 

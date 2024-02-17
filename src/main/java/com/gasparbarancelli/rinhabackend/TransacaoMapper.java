@@ -2,7 +2,7 @@ package com.gasparbarancelli.rinhabackend;
 
 import java.time.format.DateTimeFormatter;
 
-final class TransacaoMapper {
+public class TransacaoMapper {
 
     private final static DateTimeFormatter DATETIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'hh:mm:ss.SSS'Z'");
 
@@ -39,7 +39,7 @@ final class TransacaoMapper {
 
     public String map(ExtratoResposta extratoResposta) {
         StringBuilder transacoes = new StringBuilder();
-        extratoResposta.transacoes().forEach(transacao -> {
+        for (ExtratoTransacaoResposta transacao : extratoResposta.transacoes()) {
             if (!transacoes.isEmpty()) {
                 transacoes.append(", ");
             }
@@ -51,13 +51,13 @@ final class TransacaoMapper {
                       "realizada_em": "%s}"
                     }
                     """.formatted(
-                        transacao.valor(),
-                        transacao.tipo().name(),
-                        transacao.descricao(),
-                        DATETIME_FORMATTER.format(transacao.data())
+                            transacao.valor(),
+                            transacao.tipo().name(),
+                            transacao.descricao(),
+                            DATETIME_FORMATTER.format(transacao.data())
                     )
             );
-        });
+        }
 
 
         return """
