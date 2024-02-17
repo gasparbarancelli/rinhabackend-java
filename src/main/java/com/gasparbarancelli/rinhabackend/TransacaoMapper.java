@@ -37,35 +37,16 @@ public class TransacaoMapper {
             if (!transacoes.isEmpty()) {
                 transacoes.append(", ");
             }
-            transacoes.append("""
-                    {
-                      "valor": %d,
-                      "tipo": "%s",
-                      "descricao": "%s",
-                      "realizada_em": "%s}"
-                    }
-                    """.formatted(
-                            transacao.valor(),
-                            transacao.tipo().name(),
-                            transacao.descricao(),
-                            DATETIME_FORMATTER.format(transacao.data())
-                    )
-            );
+            transacoes.append("{\"valor\": %d, \"tipo\": \"%s\", \"descricao\": \"%s\", \"realizada_em\": \"%s\"}".formatted(
+                    transacao.valor(),
+                    transacao.tipo().name(),
+                    transacao.descricao(),
+                    DATETIME_FORMATTER.format(transacao.data())
+            ));
         }
 
 
-        return """
-            {
-              "saldo": {
-                "total": %d,
-                "data_extrato": "%s",
-                "limite": %d
-              },
-              "ultimas_transacoes": [
-                %s
-              ]
-            }
-            """.formatted(
+        return "{\"saldo\": {\"total\": %d, \"data_extrato\": \"%s\", \"limite\": %d}, \"ultimas_transacoes\": [%s]}".formatted(
                 extratoResposta.saldo().total(),
                 DATETIME_FORMATTER.format(extratoResposta.saldo().data()),
                 extratoResposta.saldo().limite(),
@@ -74,15 +55,10 @@ public class TransacaoMapper {
     }
 
     public String map(TransacaoResposta transacaoResposta) {
-        return """
-                {
-                    "limite": %d,
-                    "saldo": %d
-                }
-                """.formatted(
-                    transacaoResposta.limite(),
-                    transacaoResposta.saldo()
-                );
+        return "{\"limite\": %d, \"saldo\": %d}".formatted(
+                transacaoResposta.limite(),
+                transacaoResposta.saldo()
+        );
     }
 
 }
