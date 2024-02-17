@@ -47,6 +47,9 @@
                                     <goal>compile-no-fork</goal>
                                 </goals>
                                 <phase>package</phase>
+                                <configuration>
+                                    <enablePreview>true</enablePreview>
+                                </configuration>
                             </execution>
                         </executions>
                         <configuration>
