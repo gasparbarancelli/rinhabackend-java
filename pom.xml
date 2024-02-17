@@ -18,6 +18,11 @@
     </properties>
     <dependencies>
         <dependency>
+            <groupId>io.javalin</groupId>
+            <artifactId>javalin</artifactId>
+            <version>6.0.1</version>
+        </dependency>
+        <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
             <version>42.7.1</version>
@@ -72,7 +77,6 @@
                             <fallback>false</fallback>
                             <buildArgs>
                                 <buildArg>--gc=G1</buildArg>
-                                <buildArg>--pgo-instrument</buildArg>
                                 <buildArg>-march=native</buildArg>
                             </buildArgs>
                             <agent>
