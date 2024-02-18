@@ -40,7 +40,6 @@ public class DataSource {
         config.setJdbcUrl("jdbc:postgresql://" + host + "/rinha-backend?loggerLevel=OFF");
         config.setUsername("rinha");
         config.setPassword("backend");
-        config.setAutoCommit(false);
         config.addDataSourceProperty("minimumIdle", "15");
         config.addDataSourceProperty("maximumPoolSize", "15");
         config.addDataSourceProperty("cachePrepStmts", "true");
@@ -127,14 +126,10 @@ public class DataSource {
                 resultSet.next();
                 int novoSaldo = resultSet.getInt(1);
                 int limite = resultSet.getInt(2);
-                con.commit();
                 return new TransacaoResposta(
                         limite,
                         novoSaldo
                 );
-            } catch (Exception e) {
-                con.rollback();
-                throw e;
             }
         }
     }

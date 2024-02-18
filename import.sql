@@ -33,11 +33,8 @@ RETURNS TABLE (saldoRetorno int, limiteRetorno int) AS $$
 DECLARE
     cliente cliente%rowtype;
     novoSaldo int;
-    num_linhas_afetadas int;
+    numeroLinhasAfetadas int;
 BEGIN
-
-    INSERT INTO transacao (cliente_id, valor, tipo, descricao, data)
-    VALUES (clienteIdParam, valorParam, tipoParam, descricaoParam, current_timestamp);
 
     IF tipoParam = 'd' THEN
             novoSaldo := valorParam * -1;
@@ -49,11 +46,14 @@ BEGIN
     WHERE id = clienteIdParam AND (novoSaldo > 0 OR limite * -1 <= saldo + novoSaldo)
         RETURNING * INTO cliente;
 
-    GET DIAGNOSTICS num_linhas_afetadas = ROW_COUNT;
+    GET DIAGNOSTICS numeroLinhasAfetadas = ROW_COUNT;
 
-    IF num_linhas_afetadas = 0 THEN
+    IF numeroLinhasAfetadas = 0 THEN
             RAISE EXCEPTION 'Cliente nao possui limite';
     END IF;
+
+    INSERT INTO transacao (cliente_id, valor, tipo, descricao, data)
+    VALUES (clienteIdParam, valorParam, tipoParam, descricaoParam, current_timestamp);
 
 
     RETURN QUERY SELECT cliente.saldo, cliente.limite;
