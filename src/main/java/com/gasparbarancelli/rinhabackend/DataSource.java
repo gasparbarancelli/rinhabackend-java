@@ -41,8 +41,8 @@ public class DataSource {
         config.setUsername("rinha");
         config.setPassword("backend");
         config.setConnectionInitSql("SELECT 1");
-        config.addDataSourceProperty("minimumIdle", "15");
-        config.addDataSourceProperty("maximumPoolSize", "15");
+        config.setMinimumIdle(15);
+        config.setMaximumPoolSize(15);
         config.addDataSourceProperty("cachePrepStmts", "true");
         config.addDataSourceProperty("prepStmtCacheSize", "250");
         config.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");
@@ -54,6 +54,17 @@ public class DataSource {
         config.addDataSourceProperty("maintainTimeStats", "false");
 
         hikariDataSource = new HikariDataSource(config);
+        warmup();
+    }
+
+    public void warmup() {
+        for (int i = 0; i < 15; i++) {
+            try (var connection = hikariDataSource.getConnection()) {
+                // Connection is borrowed and immediately returned
+            } catch (SQLException ignore) {
+
+            }
+        }
     }
 
     public ExtratoResposta extrato(int clienteId) {
