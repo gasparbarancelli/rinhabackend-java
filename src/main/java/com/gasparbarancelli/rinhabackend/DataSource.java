@@ -40,6 +40,7 @@ public class DataSource {
         config.setJdbcUrl("jdbc:postgresql://" + host + "/rinha-backend?loggerLevel=OFF");
         config.setUsername("rinha");
         config.setPassword("backend");
+        config.setConnectionInitSql("SELECT 1");
         config.addDataSourceProperty("minimumIdle", "15");
         config.addDataSourceProperty("maximumPoolSize", "15");
         config.addDataSourceProperty("cachePrepStmts", "true");

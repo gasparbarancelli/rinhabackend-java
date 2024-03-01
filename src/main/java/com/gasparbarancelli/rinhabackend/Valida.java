@@ -27,6 +27,7 @@ public class Valida {
 
     public static Predicate<String> descricao = (descricao) ->
             Objects.nonNull(descricao)
+                    && !"null".equals(descricao)
                     && !descricao.isEmpty()
                     && descricao.length() <= 10;
 
