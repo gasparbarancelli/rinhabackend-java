@@ -21,6 +21,10 @@ public class Valida {
         }
     };
 
+    public static Predicate<String> tipo = (tipo) ->
+            Objects.nonNull(tipo)
+                    && ("d".equals(tipo) || "c".equals(tipo));
+
     public static Predicate<String> descricao = (descricao) ->
             Objects.nonNull(descricao)
                     && !descricao.isEmpty()

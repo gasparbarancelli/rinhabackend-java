@@ -20,6 +20,7 @@ public class TransacaoMapper {
         }
 
         if (!Valida.valor.test(params.get("valor"))
+                || !Valida.tipo.test(params.get("tipo"))
                 || !Valida.descricao.test(params.get("descricao"))) {
             throw new Exception("Campos invalidos");
         }
